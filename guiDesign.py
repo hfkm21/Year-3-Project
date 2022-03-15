@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, RIGHT, Y, END, LEFT, BOTH
 from tkinter import filedialog
 import pdfplumber
+from termcolor import colored
 
 window = tk.Tk()
 
@@ -37,7 +38,7 @@ def upload_file():
     filename = filedialog.askopenfilename(filetypes=filetypes)
 
     # ttk.Button(frm, text="Upload Pdf File", command=f).grid(column=1, row=0)
-    print(filename.title())  # printing file path required for extraction
+    # print(filename.title())  # printing file path required for extraction
 
     # extracting/mining all text information in the pdf to text
     all_text = ''
@@ -47,7 +48,36 @@ def upload_file():
             # print(text)
             all_text += '\n' + pdf_page_text
     txt_edit.insert(1.0, all_text)
-    print(all_text)  # working text mined successfully and printing in the terminal
+    # print(all_text)  # working text mined successfully and printing in the terminal
+    return all_text
+
+    # highlighting keywords
+    # make a read text only gui - not editable
+    # use tkinter tag function and watch videos
+    key_list = ["cold", "hot", "warm"]
+    txt_line = "today is cold may be tomorrow will be hot or warm"
+    h_colour = ["on_yellow", "on_green", "on_blue"]
+
+    c_index = 0
+    all_text = " "
+    # coloured_txt = []
+    # for phrase in key_list:
+    #     # for col in h_colour:
+    #     if phrase in txt_line.split():
+    #         # print(phrase + " " + h_colour[c_index])
+    #         # coloured_txt.append(colored(phrase, 'white', h_colour[c_index]))
+    #         # all_text += '\n' + phrase + " " + h_colour[c_index]
+    # all_text += '\n' + "welcome to plus2net"
+    # all_text += '\n' + " ".join(coloured_txt)
+
+    # c_index = c_index + 1
+    # txt_edit.tag_add()
+    # return phrase
+    # txt_edit.insert(tk.END, "Welcome to plus2net")
+    # txt_edit.tag_add('my_tag', '1.2', '1.13')
+    # font1 = ('Times', 'underline')
+    # txt_edit.config('my_tag', background='yellow', foreground='red', font=font1)
+    # print(all_text)
 
 
 # function to save the key phrases extracted and their wikipedia definition links
@@ -106,6 +136,7 @@ scrollbar.grid(row=0, column=1, sticky='ns')
 # communicate back to the scrollbar
 txt_edit['yscrollcommand'] = scrollbar.set
 # maybe change order of buttons, home, upload/open, extract, show extracted phrases, save the phrases as pdf, exit
+
 window.mainloop()
 
 # TO DO:

@@ -1,26 +1,34 @@
 import yake
+from yake import datarepresentation
 
 # import rake
 
+# experiment for dissertation writing on this on playing and fiddling with different features, stopwords,
+# window size, etc
 language = "en"
 max_ngram_size = 3
 deduplication_threshold = 0.6
-deduplication_algo = 'seqm'
-windowSize = 1
+deduplication_algo = 'seqm'  # jaro, levs, seqm
+windowSize = 3
 numOfKeywords = 50
+
+# try nltk stopwords, use the github ones or create stopwords by taking the more frequent words as stopwords
+stopwords = ''
+
+
+# features = 'WSpread'  # WPos, WRel, WCase, WFreq
 
 
 # yake extraction function
 def yake_extraction(extracted_text):
     custom_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold,
-                                             dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords,
+                                             dedupFunc=deduplication_algo,
+                                             windowsSize=windowSize, top=numOfKeywords,
                                              features=None)
-    keywords = custom_extractor.extract_keywords(extracted_text)
 
-    # printing key phrases by yake
-    k = []
-    for kw in keywords:
-        print(kw)
+    keywords = custom_extractor.extract_keywords(extracted_text)
+    # print(keywords)
+    return keywords
 
 # rake extraction function
 
