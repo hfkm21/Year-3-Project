@@ -7,7 +7,7 @@ import numpy as np
 import pdfplumber
 import yake
 from extractionMethod import yake_extraction
-import wikipedia
+
 
 root = Tk()
 

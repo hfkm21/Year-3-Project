@@ -1,14 +1,16 @@
 import tkinter as tk
 from tkinter import ttk, RIGHT, Y, END, LEFT, BOTH
 from tkinter import filedialog
+from tkinter import *
 import pdfplumber
-from termcolor import colored
 
 window = tk.Tk()
+window.state("zoomed")
 
 # the window fits the screen of the user window
 width, height = window.winfo_screenwidth(), window.winfo_screenheight()
-window.geometry('%dx%d+0+0' % (width, height))
+# window.geometry('%dx%d+0+0' % (width, height))
+window.geometry("1010x1050")
 window.resizable(False, False)
 # making background transparent
 # window.attributes('-alpha', 0.94)
@@ -16,22 +18,22 @@ window.resizable(False, False)
 # changing the icon by putting the path to the new icon
 # window.iconbitmap(......)
 window.title("Key phrase Extractor Glossary")
-window.rowconfigure(0, minsize=800, weight=2)
-window.columnconfigure(1, minsize=500, weight=2)
+# window.rowconfigure(0, weight=3)
+window.columnconfigure(0, weight=1)
+window.columnconfigure(1, weight=1)
+# window.columnconfigure(2, minsize=50, weight=1)
 
-txt_edit = tk.Text(window, bd=5)
+txt_edit = tk.Text(window, bd=5, width=100, height=150)
+
+
+# scroll = tk.Scrollbar(window, command=txt_edit.yview)
+# txt_edit.configure(yscrollcommand=scroll.set)
+
 
 # tk. GROOVE/RAISED it's the type of the button
 # try to make it a browse button showing the file path being uploaded
 
-# this is the frame containing the left-hand side buttons
-fr_buttons = tk.Frame(window, relief=tk.GROOVE, bd=2, padx=120)
-
-# this is the frame containing the buttons on the right-hand side
-fr2_buttons = tk.Frame(window, relief=tk.GROOVE, bd=2, padx=120)
-
-
-# function to open and upload the pdf file
+# function to open and upload the pdf file soon after creating the app window
 def upload_file():
     # capture the file path to use for key phrase extraction after its uploaded using a variable
     filetypes = [('Pdf files', '*.pdf'), ("All Files", "*.*")]
@@ -47,95 +49,86 @@ def upload_file():
             pdf_page_text = pdf_page.extract_text()
             # print(text)
             all_text += '\n' + pdf_page_text
-    txt_edit.insert(1.0, all_text)
+    # txt_edit.insert(1.0, all_text)
     # print(all_text)  # working text mined successfully and printing in the terminal
     return all_text
 
-    # highlighting keywords
-    # make a read text only gui - not editable
-    # use tkinter tag function and watch videos
-    key_list = ["cold", "hot", "warm"]
-    txt_line = "today is cold may be tomorrow will be hot or warm"
-    h_colour = ["on_yellow", "on_green", "on_blue"]
 
-    c_index = 0
-    all_text = " "
-    # coloured_txt = []
-    # for phrase in key_list:
-    #     # for col in h_colour:
-    #     if phrase in txt_line.split():
-    #         # print(phrase + " " + h_colour[c_index])
-    #         # coloured_txt.append(colored(phrase, 'white', h_colour[c_index]))
-    #         # all_text += '\n' + phrase + " " + h_colour[c_index]
-    # all_text += '\n' + "welcome to plus2net"
-    # all_text += '\n' + " ".join(coloured_txt)
+# frames to organise buttons, sliders etc
+# this is the frame containing the left-hand side buttons
 
-    # c_index = c_index + 1
-    # txt_edit.tag_add()
-    # return phrase
-    # txt_edit.insert(tk.END, "Welcome to plus2net")
-    # txt_edit.tag_add('my_tag', '1.2', '1.13')
-    # font1 = ('Times', 'underline')
-    # txt_edit.config('my_tag', background='yellow', foreground='red', font=font1)
-    # print(all_text)
+def button_frames_and_grid():
+    # left hand side button frame
+    fr_buttons = ttk.Frame(window, width=65, height=100, relief=tk.SUNKEN)
+    fr_buttons['padding'] = (55, 55, 55, 55)
+    fr_buttons.pack()
+    # right hand side buttons frame
+    # fr2_buttons = tk.Frame(window, relief=tk.GROOVE, bd=2, padx=310)
+
+    # lef hand buttons and grid pos
+    # menu_label = tk.Label(fr_buttons, text="Select extraction method")
+    # menu_label.config
+    btn_upload = tk.Button(fr_buttons, text="Select file to upload", command=lambda: upload_file())
+
+    extraction_method_list = ["Select extraction method:", "Algorithm1", "Algorithm2"]
+    var = StringVar(fr_buttons)
+    var.set(extraction_method_list[0])
+    option = OptionMenu(fr_buttons, var, "Algorithm1", "Algorithm2")
+    # option.config(width=25)
+    option.pack(side=tk.TOP)
+    # var.trace("w", var.get())
+
+    slider_label = tk.Label(fr_buttons, text='Select key phrases number')
+    slider = tk.Scale(fr_buttons, from_=0, to=20, orient='horizontal')
+    slider.config(width=25)
+    slider.set(10)
+    slider.pack()
+
+    btn_extract = tk.Button(fr_buttons, text="Extract")
+    # btn_phrases = ttk.Button(fr_buttons, text="Key Phrases")
+    btn_concurrence = tk.Button(fr_buttons, text="Concurrence")
+    # btn_save = ttk.Button(fr_buttons, text="Save As...")
+    btn_exit = tk.Button(fr_buttons, text="Exit", height=3, width=5, command=window.quit)
+
+    # grid
+    btn_upload.grid(row=0, column=0, sticky=tk.NSEW, padx=0, pady=50)
+
+    # menu_label.grid(row=0, column=0, sticky="we", ipadx=0, ipady=0)
+    option.grid(row=1, column=0, sticky=tk.NSEW, padx=0, pady=50)
+
+    slider_label.grid(row=2, column=0, sticky=tk.NSEW, padx=0, pady=0)
+    slider.grid(row=3, column=0, sticky=tk.NSEW, padx=0, pady=50)
+
+    # btn_phrases.grid(row=1, column=0, sticky="we", padx=0, pady=50)
+    btn_concurrence.grid(row=4, column=0, sticky=tk.NSEW, padx=0, pady=50)
+    # btn_save.grid(row=5, column=0, sticky="we", padx=0, pady=5)
+    btn_extract.grid(row=5, column=0, sticky=tk.NSEW, padx=0, pady=50)
+
+    btn_exit.grid(row=6, column=0, sticky=tk.NSEW, padx=0, pady=80)
+    # btn_exit.config(height=1, width=2)
+
+    fr_buttons.grid(row=0, column=0, sticky=tk.NS)
+
+    # future right hand side buttons and grid pos
+    # fr2_buttons.grid(row=0, column=2, sticky="ns")
 
 
-# function to save the key phrases extracted and their wikipedia definition links
-# def phrases_saveAs():
+button_frames_and_grid()
 
+# text box grid pos in the window
+txt_edit.grid(row=0, column=1, sticky=tk.NS)
 
-# All left buttons grouped together, their positional grid and frame
-# displays a home page for the glossary- description of what it is about
-btn_home = ttk.Button(fr_buttons, text="Home")
-
-# displays the extracted key phrases and their definitions - after users exit extract
-btn_phrases = ttk.Button(fr_buttons, text="Key Phrases")
-
-# displays key phrases and their definitions after pressed
-btn_concurrence = ttk.Button(fr_buttons, text="Concurrence")
-
-# gives the user the choice to save the key phrases they have extracted
-btn_save = ttk.Button(fr_buttons, text="Save As...")
-
-# gives the user the choice to save the key phrases they have extracted
-btn_exit = ttk.Button(fr_buttons, text="Exit", command=window.quit)
-
-btn_home.grid(row=0, column=0, sticky="we", padx=0, pady=5)
-btn_phrases.grid(row=1, column=0, sticky="we", padx=0, pady=5)
-btn_concurrence.grid(row=5, column=0, sticky="we", padx=0, pady=5)
-# btn_save.grid(row=5, column=0, sticky="we", padx=0, pady=5)
-btn_exit.grid(row=7, column=0, sticky="we", padx=0, pady=5)
-
-fr_buttons.grid(row=0, column=0, sticky="ns")
-
-# All right buttons their positional grid and their frame
-btn_algo = ttk.Button(fr2_buttons, text="Extracted Algorithm:")
-
-# command lambda allows to open  the file when the button is pressed
-btn_upload = ttk.Button(fr2_buttons, text="File Upload", command=lambda: upload_file())
-
-btn_key = ttk.Button(fr2_buttons, text="Key Phrase No:")
-
-# displays the extracted key phrases and their definitions - after users exit extract
-btn_extract = ttk.Button(fr2_buttons, text="Extract")
-
-btn_algo.grid(row=0, column=0, sticky="we", padx=0, pady=5)
-btn_upload.grid(row=1, column=0, sticky="we", padx=0, pady=5)
-btn_key.grid(row=5, column=0, sticky="we", padx=0, pady=5)
-btn_extract.grid(row=7, column=0, sticky="we", padx=0, pady=15)
-
-fr2_buttons.grid(row=0, column=2, sticky="ns")
-
-# setting the text box position in the window
-txt_edit.grid(row=0, column=1, sticky="ns")
-
-# creating a scrollbar for the textbox
-scrollbar = ttk.Scrollbar(window, orient='vertical', command=txt_edit.yview)
-scrollbar.grid(row=0, column=1, sticky='ns')
-
-# communicate back to the scrollbar
-txt_edit['yscrollcommand'] = scrollbar.set
+# # textbox scrollbar
+# scrollbar = ttk.Scrollbar(window, orient='vertical', command=txt_edit.yview)
+# scrollbar.grid(row=0, column=1, sticky='ns')
+#
+# # communicate back to the scrollbar
+# txt_edit['yscrollcommand'] = scrollbar.set
 # maybe change order of buttons, home, upload/open, extract, show extracted phrases, save the phrases as pdf, exit
+
+# scroll = tk.Scrollbar(window, command=txt_edit.yview)
+# txt_edit.configure(yscrollcommand=scroll.set)
+# scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
 window.mainloop()
 
@@ -162,3 +155,7 @@ window.mainloop()
 # watch buttons tutorials, -styling buttons , position as well
 # rearrange buttons style- but do this later
 # make the text box read only and non-editable
+
+
+# frame arrangements
+#  https://stackoverflow.com/questions/45122244/having-frames-next-to-each-other-in-tkinter
