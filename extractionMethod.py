@@ -48,6 +48,3 @@ def key_phrase_extraction(extracted_text, extraction_method, key_phrase_number):
     if 0 < key_phrase_number <= 20:
         print(list(islice(ls.items(), key_phrase_number)))
         return list(islice(ls.items(), key_phrase_number))
-    else:
-        print(
-            "A number of key phrases can not be displayed!! keep trying a lower or greater number of key phrases from 1 to 20")

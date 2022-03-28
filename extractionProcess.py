@@ -8,58 +8,73 @@ import pdfplumber
 import yake
 from extractionMethod import key_phrase_extraction
 
+import tkinter as tk
+from tkinter import ttk, RIGHT, Y, END, LEFT, BOTH
+from tkinter import filedialog
+from tkinter import *
+from tkinter.ttk import *
+import pdfplumber
+from extractionMethod import key_phrase_extraction
+import tkinter.scrolledtext as scrolledtext
+
 root = Tk()
 
 # the window fits the screen of the user window
-width, height = root.winfo_screenwidth(), root.winfo_screenheight()
-root.geometry('%dx%d+0+0' % (width, height))
-root.resizable(True, True)
+# width, height = root.winfo_screenwidth(), root.winfo_screenheight()
+# root.geometry('%dx%d+0+0' % (width, height))
+# root.resizable(True, True)
 
-# should be removed later on
-# root.withdraw()
+root.geometry('1000x1110')
+root.resizable(1, 1)
 
-frm = ttk.Frame(root, padding=10)
-frm.grid()
-# ttk.Label(frm, text="Hello World!").grid(column=0, row=0)
+# UI options
+paddings = {'padx': 5, 'pady': 5}
 
-
-style = ttk.Style()
-style.layout("TMenubutton", [
-    ("Menubutton.background", None),
-    ("Menubutton.button", {"children":
-                               [("Menubutton.focus", {"children":
-                                                          [("Menubutton.padding", {"children":
-                                                                                       [("Menubutton.label",
-                                                                                         {"side": "left",
-                                                                                          "expand": 1})]
-                                                                                   })]
-                                                      })]
-                           }),
-])
-
-mbtn = ttk.Menubutton(frm, text="±Hello")
-mbtn.pack()
+# configure the grid
+root.columnconfigure(0, weight=1)
+root.columnconfigure(1, weight=1)
+root.columnconfigure(2, weight=2)
 
 
-def upload_file():
-    # capture the file path to use for key phrase extraction after its uploaded using a variable
-    filetypes = [('Pdf files', '*.pdf')]
-    f = filedialog.askopenfile(filetypes=filetypes)
+txt_edit = scrolledtext.ScrolledText(root, undo=True, bd=5, width=130, height=150, relief="flat")
+txt_edit['font'] = ('consolas', '14')
 
-    # styling buttons/frame ideas
-    # ttk.Button(frm, text="Upload Pdf File", command=f).grid(column=1, row=0)
-    # print(f.name)  # printing file path required for extraction
-    b1 = buttons_style("yes")
-    b1.grid(column=1, row=0)
-    # extracting/mining all text information in the pdf to text
-    all_text = ''
-    with pdfplumber.open(f.name) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text()
-            # print(text)
-            all_text += '\n' + text
-    # print(all_text)  # working text mined successfully and printing in the terminal
-    return all_text
+txt_edit.insert(tk.END, "Welcome Floyd")
+txt_edit.config(state='disabled')
+txt_edit.pack(expand=True, fill='both')
+txt_edit.grid(row=0, column=1, sticky=tk.NS, pady=0, padx=0)
+
+# # function to open and upload the pdf file soon after creating the app window
+# def upload_file():
+#     # capture the file path to use for key phrase extraction after its uploaded using a variable
+#     filetypes = [('Pdf files', '*.pdf'), ("All Files", "*.*")]
+#     filename = filedialog.askopenfilename(filetypes=filetypes)
+#     # ttk.Button(frm, text="Upload Pdf File", command=f).grid(column=1, row=0)
+#     # print(filename.title())  # printing file path required for extraction
+#
+#     # extracting/mining all text information in the pdf to text
+#     all_text = ''
+#     with pdfplumber.open(filename.title()) as pdf:
+#         for pdf_page in pdf.pages:
+#             pdf_page_text = pdf_page.extract_text()
+#             # print(text)
+#             # case normalisation of text
+#             all_text += '\n' + pdf_page_text.lower()
+#     return all_text
+#
+#
+# # get text from the uploaded pdf doc
+# doc_text = upload_file()
+# print(doc_text)
+#
+# # left hand buttons and grid pos
+# btn_exit = ttk.Button(root, text="Exit", command=root.quit)
+# btn_exit.pack()
+# btn_exit.grid(row=0, column=0, sticky=tk.W, **paddings)
+#
+# btn_upload = ttk.Button(root, text="Upload file:", style='TButton', command=upload_file)
+# btn_upload.pack()
+# btn_upload.grid(row=1, column=0, sticky=tk.W, **paddings)
 
 
 root.mainloop()
