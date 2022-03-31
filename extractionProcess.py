@@ -7,6 +7,9 @@ import numpy as np
 import pdfplumber
 import yake
 from extractionMethod import key_phrase_extraction
+import nltk
+from nltk.corpus import stopwords
+
 
 import tkinter as tk
 from tkinter import ttk, RIGHT, Y, END, LEFT, BOTH
@@ -75,7 +78,8 @@ txt_edit.grid(row=0, column=1, sticky=tk.NS, pady=0, padx=0)
 # btn_upload = ttk.Button(root, text="Upload file:", style='TButton', command=upload_file)
 # btn_upload.pack()
 # btn_upload.grid(row=1, column=0, sticky=tk.W, **paddings)
-
+stops = set(stopwords.words('english'))
+print(stops)
 
 root.mainloop()
 

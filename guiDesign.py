@@ -10,6 +10,7 @@ import pdfplumber
 from extractionMethod import key_phrase_extraction
 import tkinter.scrolledtext as scrolledtext
 from nltk.tokenize import word_tokenize
+from stopwords import get_stopwords
 
 import yake
 import nltk
@@ -40,7 +41,7 @@ def upload_file():
     filetypes = [('Pdf files', '*.pdf'), ("All Files", "*.*")]
     filename = filedialog.askopenfilename(filetypes=filetypes)
     # pathlabel.config(text=os.path.basename(filename),fg="blue")
-    # ttk.Button(frm, text="Upload Pdf File", command=f).grid(column=1, row=0)
+    # ttk.Button(fr_buttons, text="Upload Pdf File", command=f).grid(column=1, row=0, sticky=tk.W, **paddings)
     print(filename.title())  # printing file path required for extraction
 
     # extracting/mining all text information in the pdf to text
@@ -52,19 +53,22 @@ def upload_file():
             # case normalisation of text
             all_text += '\n' + pdf_page_text.lower()
 
-    # dialog message showing the finame and the message
-    # filename has be uploaded you can to extract key phrases. Otherwise reload
-    messagebox.showinfo("showinfo", filename + " has been uploaded continue if its the one. " + "\n"
-                        + "Otherwise reload to upload another" + "\n")
+    # dialog message for checking if correct file name has been uploaded
+    messagebox.showinfo("showinfo", filename + " has been uploaded continue if its the one."
+                        + "\n" "Otherwise reload to upload ""another" + "\n")
 
-    return all_text
+    # file uploading button and function
+    ttk.Button(fr_buttons, text="Extract and Display", command=lambda: txt_edit.insert(tk.END,
+               update_txt(key_phrase_extraction(all_text, get(var), get(slider))))).grid(row=9, column=0, sticky=tk.W, **paddings)
+    # return all_text
 
+    # do the highlighting/ return sentences where key phrases are mentioned in all text
 
-# get text from the uploaded pdf doc
-doc_text = upload_file()
-
-
-# print(doc_text)
+    # co-occurrence button
+    btn_concurrence = ttk.Button(fr_buttons, text="Phrase Concurrence Display",
+                                 command=lambda: update_txt(all_text))
+    btn_concurrence.pack()
+    btn_concurrence.grid(row=12, column=0, sticky=tk.W, **paddings)
 
 
 # the get function for getting values/strings from gui input- slider and option buttons
@@ -73,48 +77,60 @@ def get(input_variable):
     return input_variable.get()
 
 
-language = "en"
-max_ngram_size = 3
-deduplication_threshold = 0.6
-deduplication_algo = 'seqm'  # jaro, levs, seqm
-windowSize = 3
-numOfKeywords = 50
+def update_txt(text):
+    txt_edit.delete(1.0, tk.END)
+    txt_edit.update()
+    txt_edit.insert(tk.END, text)
 
 
-def phrase_coocurence(textbox):
-    #  create colour list
-    color_list = ["red", "yellow"]
-    #
-    #     # create key phrase list
-    #   do the yake or rake extraction again depending on the method provided and return  list of key phrases
-    if get(var) == "Algorithm1":
-        custom_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold,
-                                                 dedupFunc=deduplication_algo,
-                                                 windowsSize=windowSize, top=numOfKeywords,
-                                                 features=None)
-        keywords = [tup[0] for tup in custom_extractor.extract_keywords(doc_text)]
-        print(keywords)
-        l = []
-        for i, word in enumerate(word_tokenize(doc_text)):
-            if word in keywords:
-                # use this - simple option
-                textbox.tag_config(word, background= color_list[i])
-                textbox.insert(END, word)
+# def phrase_coocurence(textbox):
+#     #  create colour list
+#     # color_list = ["red", "yellow"]
+#     #     # create key phrase list
+#     #   do the yake or rake extraction again depending on the method provided and return  list of key phrases
+#     if get(var) == "Algorithm1":
+#         # custom_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold,
+#         #                                          dedupFunc=deduplication_algo,
+#         #                                          windowsSize=windowSize, top=numOfKeywords,
+#         #                                          features=None)
+#         # keywords = [tup[0] for tup in custom_extractor.extract_keywords(doc_text)]
+#         # print(keywords)
+#         # for i, word in enumerate(word_tokenize(doc_text)):
+#         #     if word in keywords:
+#         # use this - simple option
+#         #  https://stackoverflow.com/questions/17829713/tkinter-highlight-colour-specific-lines-of-text-based-on-a-keyword
+#         # indexing of words for highlighting e.g counting the number characters, positiong number they occur by counting
+#         # all words
+#         # insert text into the text box then hightlight word
+#         word = "ibm"
+#         textbox.insert(tk.END, doc_text)
+#         textbox.tag_add("one", "1.0", "1.3")
+#         # configure the tag
+#         textbox.tag_config("one", background="yellow", foreground="blue")
+#         # textbox.insert(END, word)
+#
+#         # try returning the sentences in which the key phrases occur
+
+
+# create a function that does the key phrase extraction and do the concurrence inside after the extraction
+# the function remains the same but adding the cooccurence part to make the cooccurence work after the
+#  extract button- place the additional code in key phrase extract right before return join
 
 
 # creating text box for text display
-txt_edit = scrolledtext.ScrolledText(window, undo=True, bd=5, width=130, height=150, relief="flat", wrap=WORD)
+txt_edit = scrolledtext.ScrolledText(window, undo=True, bd=5, width=100, height=150, relief="flat", wrap=WORD)
 txt_edit['font'] = ('consolas', '14')
 # txt_edit.config(state='disabled')
 txt_edit.pack(expand=True, fill='both')
 txt_edit.grid(row=0, column=1, sticky=tk.NS, pady=0, padx=0)
+txt_edit.columnconfigure(0, weight=20)
 
 # styles
 # styling the frame
 # ttk.Style().configure('TFrame', background='grey')
 
 # styling all buttons includes 2 buttons used as labels
-ttk.Style().configure("TButton", width=20, height=20, padding=5, relief="flat", background="#ccc")
+ttk.Style().configure("TButton", width=25, height=25, padding=5, relief="flat", background="#ccc")
 
 #  styling option menu
 menu_style = ttk.Style()
@@ -137,11 +153,14 @@ fr_buttons.grid(row=0, column=0, sticky=tk.NS)
 # left hand buttons and grid pos and their padding in the frame
 paddings = {'padx': 20, 'pady': 50}
 
-btn_upload = ttk.Button(fr_buttons, text="Upload file:", style='TButton', command=lambda: upload_file())
+btn_upload = ttk.Button(fr_buttons, text="Upload file:", style='TButton')
+btn_upload.configure(command=lambda: upload_file())
 btn_upload.pack()
 btn_upload.grid(row=0, column=0, sticky=tk.W, **paddings)
+# # btn_upload['state'] = 'disabled'
 
-extraction_method_list = ["Algorithm1", "Algorithm2"]
+# upload_file()
+extraction_method_list = [".....Select.....", "Algorithm1", "Algorithm2"]
 var = StringVar(fr_buttons)
 var.set(extraction_method_list[0])
 option = ttk.OptionMenu(fr_buttons, var, *extraction_method_list)
@@ -166,26 +185,18 @@ slider.set(10)
 slider.pack()
 slider.grid(row=6, column=1, sticky=tk.E, **paddings)
 
-# try the key phrase function here
+# btn_extract = ttk.Button(fr_buttons, text="Extract and Display", command=lambda: txt_edit.insert(tk.END,
+#                          key_phrase_extraction(all_text, get(var), get(slider))))
+# btn_extract.pack()
+# btn_extract.grid(row=9, column=0, sticky=tk.W, **paddings)
+# btn_extract['state'] = 'disabled'
 
-# out = [item for t in kp for item in t]
-btn_extract = ttk.Button(fr_buttons, text="Extract", command=lambda: txt_edit.insert(tk.END,
-                                                                                     key_phrase_extraction(doc_text,
-                                                                                                           get(var),
-                                                                                                           get(
-                                                                                                               slider))))
-# slider.update()
-# print(slider.get())
-# btn_extract['state'] ='disabled'
 
-# btn_phrases = ttk.Button(window, text="Key Phrases")
-btn_concurrence = ttk.Button(fr_buttons, text="Concurrence", command=lambda: phrase_coocurence(txt_edit))
-btn_concurrence.pack()
-btn_concurrence.grid(row=9, column=0, sticky=tk.W, **paddings)
+# # btn_phrases = ttk.Button(window, text="Key Phrases")
+# btn_concurrence = ttk.Button(fr_buttons, text="Phrase Concurrence Display")
+# btn_concurrence.pack()
+# btn_concurrence.grid(row=12, column=0, sticky=tk.W, **paddings)
 
-btn_extract.grid(row=12, column=0, sticky=tk.W, **paddings)
-btn_extract.pack()
-btn_extract.grid(row=12, column=0, sticky=tk.W, **paddings)
 
 btn_exit = ttk.Button(fr_buttons, text="Exit", command=window.quit)
 btn_exit.pack()
