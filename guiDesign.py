@@ -53,14 +53,23 @@ def upload_file():
             # case normalisation of text
             all_text += '\n' + pdf_page_text.lower()
 
-    # dialog message for checking if correct file name has been uploaded
-    messagebox.showinfo("showinfo", filename + " has been uploaded continue if its the one."
-                        + "\n" "Otherwise reload to upload ""another" + "\n")
+    # # dialog message for checking if correct file name has been uploaded
+    # messagebox.showinfo("showinfo", filename + " has been uploaded continue if its the one."
+    #                     + "\n" "Otherwise reload to upload ""another" + "\n")
 
     # file uploading button and function
     ttk.Button(fr_buttons, text="Extract and Display", command=lambda: txt_edit.insert(tk.END,
-               update_txt(key_phrase_extraction(all_text, get(var), get(slider))))).grid(row=9, column=0, sticky=tk.W, **paddings)
-    # return all_text
+                                                                                       update_txt(key_phrase_extraction(
+                                                                                           all_text, get(var),
+                                                                                           get(slider))))).grid(row=9,
+                                                                                                                column=0,
+                                                                                                                sticky=tk.W,
+                                                                                                                **paddings)
+
+    # use a styled disable button with text as the filename being uploaded, white back ground and make slider and
+    # menu same size and style to match
+    file_name = os.path.basename(filename)
+    ttk.Label(fr_buttons, text=("...") + file_name + ("...")).grid(row=0, column=1, sticky=tk.W, **paddings)
 
     # do the highlighting/ return sentences where key phrases are mentioned in all text
 
@@ -69,6 +78,7 @@ def upload_file():
                                  command=lambda: update_txt(all_text))
     btn_concurrence.pack()
     btn_concurrence.grid(row=12, column=0, sticky=tk.W, **paddings)
+    print(all_text)
 
 
 # the get function for getting values/strings from gui input- slider and option buttons
@@ -78,9 +88,21 @@ def get(input_variable):
 
 
 def update_txt(text):
+    txt_edit['state'] = 'normal'
+    txt_edit.update()
     txt_edit.delete(1.0, tk.END)
     txt_edit.update()
     txt_edit.insert(tk.END, text)
+    txt_edit.update()
+    txt_edit['state'] = 'disabled'
+    txt_edit.update()
+
+
+# maybe a highlight method for highlighting text
+
+
+# to be able to highlight and annotate text and  key phrases may be bring the extraction
+# method function and do it from here
 
 
 # def phrase_coocurence(textbox):
@@ -112,25 +134,19 @@ def update_txt(text):
 #         # try returning the sentences in which the key phrases occur
 
 
-# create a function that does the key phrase extraction and do the concurrence inside after the extraction
-# the function remains the same but adding the cooccurence part to make the cooccurence work after the
-#  extract button- place the additional code in key phrase extract right before return join
-
-
 # creating text box for text display
 txt_edit = scrolledtext.ScrolledText(window, undo=True, bd=5, width=100, height=150, relief="flat", wrap=WORD)
 txt_edit['font'] = ('consolas', '14')
 # txt_edit.config(state='disabled')
-txt_edit.pack(expand=True, fill='both')
+txt_edit.pack()
 txt_edit.grid(row=0, column=1, sticky=tk.NS, pady=0, padx=0)
 txt_edit.columnconfigure(0, weight=20)
 
-# styles
 # styling the frame
-# ttk.Style().configure('TFrame', background='grey')
+# ttk.Style().configure('TFrame', background='grey', foreground = 'yellow')
 
 # styling all buttons includes 2 buttons used as labels
-ttk.Style().configure("TButton", width=25, height=25, padding=5, relief="flat", background="#ccc")
+ttk.Style().configure("TButton", width=21, height=21, padding=5, relief="flat", background="#ccc")
 
 #  styling option menu
 menu_style = ttk.Style()
@@ -140,71 +156,53 @@ menu_style.configure('TMenubutton', width=10, height=10, padding=0, background="
 slider_style = ttk.Style()
 slider_style.configure('Horizontal.TScale', width=10, height=10, padding=0, background="#ccc")
 
-# left hand side button frame
-# padding="0.5i"
+# left hand side button frame padding="0.5i"
 fr_buttons = ttk.Frame(window, width=100, height=150, relief=tk.RIDGE)
-# fr_buttons['padding'] = (55, 55, 55, 55)
 fr_buttons.columnconfigure(0, weight=3)
 fr_buttons.columnconfigure(1, weight=1)
-fr_buttons.pack(expand=True, fill=BOTH)
+fr_buttons.pack()
 fr_buttons.grid(row=0, column=0, sticky=tk.NS)
 
-# tkk inter message box for errors e.g insufficient key phrase number
 # left hand buttons and grid pos and their padding in the frame
 paddings = {'padx': 20, 'pady': 50}
-
+# upload button
 btn_upload = ttk.Button(fr_buttons, text="Upload file:", style='TButton')
 btn_upload.configure(command=lambda: upload_file())
 btn_upload.pack()
 btn_upload.grid(row=0, column=0, sticky=tk.W, **paddings)
-# # btn_upload['state'] = 'disabled'
 
-# upload_file()
+# option menu
 extraction_method_list = [".....Select.....", "Algorithm1", "Algorithm2"]
 var = StringVar(fr_buttons)
 var.set(extraction_method_list[0])
 option = ttk.OptionMenu(fr_buttons, var, *extraction_method_list)
-# # # option.config(width=25)
 option.pack()
 var.trace("w", var.get())
 btn_opt_label = ttk.Button(fr_buttons, text='Extraction method:', style='TButton')
 btn_opt_label['state'] = 'disabled'
 btn_opt_label.pack()
-btn_opt_label.grid(row=6, column=0, sticky=tk.W, **paddings)
+# btn_opt_label.grid(row=6, column=0, sticky=tk.W, **paddings)
 btn_opt_label.grid(row=3, column=0, sticky=tk.W, **paddings)
-option.grid(row=3, column=1, sticky=tk.E, **paddings)
+option.grid(row=3, column=1, sticky=tk.W, **paddings)
+# .configure(width=25)
 
+# slider button
 btn_slider_label = ttk.Button(fr_buttons, text='key phrases number:', style='TButton')
 btn_slider_label['state'] = 'disabled'
 btn_slider_label.pack()
 btn_slider_label.grid(row=6, column=0, sticky=tk.W, **paddings)
 
 slider = tk.Scale(fr_buttons, from_=1, to=20, orient='horizontal')
-# slider.config(width=15)
 slider.set(10)
 slider.pack()
-slider.grid(row=6, column=1, sticky=tk.E, **paddings)
+slider.grid(row=6, column=1, sticky=tk.W, **paddings)
 
-# btn_extract = ttk.Button(fr_buttons, text="Extract and Display", command=lambda: txt_edit.insert(tk.END,
-#                          key_phrase_extraction(all_text, get(var), get(slider))))
-# btn_extract.pack()
-# btn_extract.grid(row=9, column=0, sticky=tk.W, **paddings)
-# btn_extract['state'] = 'disabled'
-
-
-# # btn_phrases = ttk.Button(window, text="Key Phrases")
-# btn_concurrence = ttk.Button(fr_buttons, text="Phrase Concurrence Display")
-# btn_concurrence.pack()
-# btn_concurrence.grid(row=12, column=0, sticky=tk.W, **paddings)
-
-
+# exit button
 btn_exit = ttk.Button(fr_buttons, text="Exit", command=window.quit)
 btn_exit.pack()
 btn_exit.grid(row=15, column=0, sticky=tk.W, **paddings)
 
 window.mainloop()
-
-# message box for errors with any of button functions eg, problem with file upload, empty file for key phrase extraction
 
 # frame arrangements
 #  https://stackoverflow.com/questions/45122244/having-frames-next-to-each-other-in-tkinter
@@ -215,13 +213,4 @@ window.mainloop()
 # print(slider.get())
 # option.update()
 # print(option.get())
-
-# text highlighting ideas
-# use this - simple option
-# Text.tag_config("s", background="yellow")
-# Text.insert(END,("s"))
-
-# use the above but input a list of 20 colours max that can be indexed to tag the each key phrase uniquely
-# e,g colors = [1...20]
-# for loop that will each prase in turn after the user has selected the amount and color using the color list
-# where it occurs in the all_text = doc_txt
+# errors in when selecting algorithm option
