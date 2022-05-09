@@ -34,7 +34,7 @@ center_y = int(height / 2 - window_height / 2)
 # set the position of the window to the center of the screen
 window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 window.title("Keyphrase Extractor Glossary")
-window.resizable(0, 0)
+window.resizable(1, 1)
 window.geometry('%dx%d+0+0' % (width, height))
 window.rowconfigure(0, weight=1)
 window.columnconfigure(1, weight=1)
@@ -109,13 +109,13 @@ def key_phrase_extraction(extracted_text, extraction_method, key_phrase_number):
         # rake extraction process
         r_extractor = RAKE.Rake(RAKE.SmartStopList())
         # decoy for getting length
-        decoy_keywords = [tup[0].replace(" \n", "") for tup in
+        decoy_keywords = [tup[0].replace("\n", "") for tup in
                           r_extractor.run(extracted_text, min_chars, max_words, min_freq)]
         # rake length for sort order
         l_length = len(decoy_keywords)
 
         # rake keywords list ordered in their order of importance
-        r_keywords = [tup[0].replace(" \n", "") for tup in
+        r_keywords = [tup[0].replace("\n", "") for tup in
                       r_extractor.run(extracted_text, min_chars, max_words, min_freq)]
 
         # candidate sentences selection by returning all sentences in which the key phrase is mentioned in document
@@ -156,23 +156,10 @@ def key_phrase_extraction(extracted_text, extraction_method, key_phrase_number):
             return "".join(out)
 
 
-class color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
-
-
 # file upload function
 def upload_file():
     # capture the file path to use for key phrase extraction after its uploaded using a variable
-    filetypes = [('Pdf files', '*.pdf'), ("All Files", "*.*")]
+    filetypes = [('Pdf files', '*.pdf'), ("All Files", "* .*")]
     filename = filedialog.askopenfilename(filetypes=filetypes)
 
     # extracting/mining pdf text doc
@@ -184,14 +171,14 @@ def upload_file():
             all_text += '\n' + pdf_page_text.lower() + '\n'
 
     # file uploading button and function
-    btn_extract = ttk.Button(fr_buttons, text="Extract and Display", command=lambda: txt_edit.insert(tk.END, update_txt(
-        key_phrase_extraction(all_text, get(var), get(slider)))))
+    btn_extract = ttk.Button(fr_buttons, text="Extract and Display", command=lambda: update_txt(
+        key_phrase_extraction(all_text, get(var), get(slider))),style='TButton')
     btn_extract.grid(row=3, column=0, **paddings2, sticky=tk.W)
 
     # upload button label
     file_name = os.path.basename(filename)
     tk_label = tk.Label(fr_buttons, text="..." + file_name + "...", borderwidth=1, relief=tk.SUNKEN, height=1,
-                        background='gainsboro')
+                        background='snow3')
     tk_label.grid(row=0, column=1, **paddings2, sticky=tk.W)
     print(all_text)
 
@@ -308,11 +295,11 @@ ttk.Style().configure("TButton", width=25, height=25, padding=5, relief=tk.FLAT,
 
 #  styling option menu
 menu_style = ttk.Style()
-menu_style.configure('TMenubutton', width=15, height=28, padding=0, background="#ccc")
+menu_style.configure('TMenubutton', width=15, height=28, padding=0, background="snow3")
 
 # styling the slider
 slider_style = ttk.Style()
-slider_style.configure('Horizontal.TScale', width=10, height=9, padding=0, background="gainsboro")
+slider_style.configure('Horizontal.TScale', width=10, height=9, padding=0, background="snow3")
 
 # left-hand buttons and grid pos and their padding in the frame
 # upload button
@@ -346,13 +333,3 @@ btn_exit.grid(row=5, column=0, **paddings2, sticky=tk.W)
 
 window.mainloop()
 
-# frame arrangements
-#  https://stackoverflow.com/questions/45122244/having-frames-next-to-each-other-in-tkinter
-# try this as an experiment in extraction process
-# https://www.pythontutorial.net/tkinter/ttk-style/
-# use disabled buttons lables to make it same as other buttons
-# slider.update()
-# print(slider.get())
-# option.update()
-# print(option.get())
-# errors in when selecting algorithm option
